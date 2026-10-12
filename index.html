@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mi Tensión</title>
+  <meta name="theme-color" content="#1d3b78">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- HOY -->
+  <header class="hoy">
+    <p class="hoy-dia" id="hoyDia"></p>
+    <h1 class="hoy-fecha" id="hoyFecha"></h1>
+    <div class="tomas-hoy" id="tomasHoy" aria-label="Tomas de hoy"></div>
+  </header>
+
+  <main>
+    <!-- FORMULARIO -->
+    <form id="form" class="registro" autocomplete="off">
+      <h2 id="tituloForm">1ª toma de hoy</h2>
+
+      <div class="cifras">
+        <label class="cifra">
+          <span>Alta</span>
+          <input type="number" id="alta" inputmode="numeric" min="50" max="260" placeholder="120" required>
+        </label>
+        <span class="barra" aria-hidden="true">/</span>
+        <label class="cifra">
+          <span>Baja</span>
+          <input type="number" id="baja" inputmode="numeric" min="30" max="160" placeholder="80" required>
+        </label>
+        <label class="cifra pulso">
+          <span>Pulso</span>
+          <input type="number" id="pulso" inputmode="numeric" min="30" max="220" placeholder="70" required>
+        </label>
+      </div>
+
+      <p class="hora-auto" id="horaAuto"></p>
+
+      <button type="submit" class="guardar">Guardar toma</button>
+    </form>
+
+    <!-- HISTORIAL -->
+    <section class="cuaderno">
+      <div class="cuaderno-cab">
+        <h2>Días anteriores</h2>
+        <button id="btnPdf" class="enlace">Crear PDF</button>
+      </div>
+      <div id="lista"></div>
+    </section>
+
+    <!-- COPIA DE SEGURIDAD -->
+    <details class="copia">
+      <summary>Copia de seguridad</summary>
+      <p>Las tomas se guardan solo en este móvil. Descarga una copia de vez en cuando para no perderlas si se borra el navegador.</p>
+      <div class="copia-botones">
+        <button id="btnBackup" class="secundario">Descargar copia</button>
+        <label class="secundario">Restaurar copia
+          <input type="file" id="fileRestore" accept=".json,application/json" hidden>
+        </label>
+      </div>
+    </details>
+  </main>
+
+  <div id="aviso" class="aviso" role="status" hidden></div>
+
+  <!-- Diálogo PDF -->
+  <dialog id="dlgPdf">
+    <form method="dialog">
+      <h2>Crear PDF</h2>
+      <p class="dlg-texto">Elige qué días quieres incluir en la tabla.</p>
+      <div class="cuando">
+        <label>Desde<input type="date" id="pdfDesde"></label>
+        <label>Hasta<input type="date" id="pdfHasta"></label>
+      </div>
+      <div class="dlg-botones">
+        <button value="cancel" class="secundario">Cancelar</button>
+        <button value="ok" class="principal">Crear PDF</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Diálogo detalle / borrar -->
+  <dialog id="dlgToma">
+    <form method="dialog">
+      <h2 id="detTitulo"></h2>
+      <p class="det-cifra" id="detCifra"></p>
+      <p class="dlg-texto" id="detPulso"></p>
+      <div class="dlg-botones">
+        <button value="borrar" class="peligro">Borrar toma</button>
+        <button value="cancel" class="principal">Cerrar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="lib/jspdf.umd.min.js"></script>
+  <script src="lib/jspdf.plugin.autotable.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
