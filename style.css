@@ -389,3 +389,53 @@ dialog h2 { margin: 0 0 6px; font-size: 1.3rem; }
 }
 
 .fecha-animo { display: block; font-size: 1.3rem; margin-top: 4px; }
+
+/* ============ SIGLAS Y AYUDA ============ */
+.cifra abbr {
+  text-decoration: none;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--cobalto);
+  background: var(--cielo);
+  border-radius: 6px;
+  padding: 1px 5px;
+  margin-left: 2px;
+}
+
+.ayuda { margin: -4px 0 14px; }
+.ayuda summary {
+  cursor: pointer;
+  color: var(--cobalto);
+  font-weight: 700;
+  font-size: .95rem;
+  padding: 4px 0;
+}
+.ayuda-cuerpo p { margin: 8px 0; font-size: .95rem; color: var(--suave); }
+.ayuda-cuerpo b { color: var(--texto); }
+
+/* Imita la pantalla del tensiómetro */
+.pantalla {
+  background: #cfd8c6;
+  border: 3px solid #8a9584;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-variant-numeric: tabular-nums;
+  color: #1e2a1a;
+}
+.pantalla div {
+  display: grid;
+  grid-template-columns: 3.2em 1fr 5.4em;
+  align-items: baseline;
+  padding: 2px 0;
+}
+.pantalla .sigla { font-weight: 700; font-size: .9rem; }
+.pantalla .valor { font-size: 1.7rem; font-weight: 700; text-align: right; padding-right: 14px; }
+.pantalla .destino {
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--cobalto);
+  background: #fff;
+  border-radius: 8px;
+  padding: 2px 8px;
+}
+.pantalla .destino::before { content: "→ "; color: var(--suave); }

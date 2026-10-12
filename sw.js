@@ -1,6 +1,6 @@
 // Permite instalar la web como app y usarla sin conexión.
 // Si cambias algún archivo, sube el número de versión para que se actualice.
-const CACHE = 'tension-v8';
+const CACHE = 'tension-v9';
 const ARCHIVOS = [
   './',
   'index.html',

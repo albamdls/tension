@@ -31,19 +31,32 @@
 
       <div class="cifras">
         <label class="cifra">
-          <span>Alta</span>
-          <input type="text" id="alta" inputmode="decimal" enterkeyhint="next" pattern="[0-9]+([.,][0-9]{1,2})?" required>
+          <span>Alta <abbr>SYS</abbr></span>
+          <input type="text" id="alta" inputmode="numeric" enterkeyhint="next" maxlength="3" placeholder="120" required>
         </label>
         <span class="barra" aria-hidden="true">/</span>
         <label class="cifra">
-          <span>Baja</span>
-          <input type="text" id="baja" inputmode="decimal" enterkeyhint="next" pattern="[0-9]+([.,][0-9]{1,2})?" required>
+          <span>Baja <abbr>DIA</abbr></span>
+          <input type="text" id="baja" inputmode="numeric" enterkeyhint="next" maxlength="3" placeholder="80" required>
         </label>
         <label class="cifra pulso">
-          <span>Pulso</span>
-          <input type="text" id="pulso" inputmode="numeric" enterkeyhint="done" pattern="[0-9]+" required>
+          <span>Pulso <abbr>PUL</abbr></span>
+          <input type="text" id="pulso" inputmode="numeric" enterkeyhint="done" maxlength="3" placeholder="70" required>
         </label>
       </div>
+
+      <details class="ayuda">
+        <summary>¿Qué número va en cada casilla?</summary>
+        <div class="ayuda-cuerpo">
+          <p>Copia los números tal cual salen en la pantalla del tensiómetro, <b>sin comas ni puntos</b>.</p>
+          <div class="pantalla" aria-label="Ejemplo de pantalla del tensiómetro">
+            <div><span class="sigla">SYS</span><span class="valor">125</span><span class="destino">Alta</span></div>
+            <div><span class="sigla">DIA</span><span class="valor">78</span><span class="destino">Baja</span></div>
+            <div><span class="sigla">PUL</span><span class="valor">70</span><span class="destino">Pulso</span></div>
+          </div>
+          <p>En este ejemplo escribirías <b>125</b> en Alta, <b>78</b> en Baja y <b>70</b> en Pulso.</p>
+        </div>
+      </details>
 
       <p class="hora-auto" id="horaAuto"></p>
 

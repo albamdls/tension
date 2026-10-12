@@ -3,8 +3,8 @@ const CLAVE = 'tension_registros_v1';
 const CLAVE_ANIMO = 'tension_animo_v1';
 const TOMAS_AL_DIA = 3;
 
-// Límites que ha indicado el médico (en cmHg)
-const LIMITE = { altaMax: 13.0, bajaMax: 8.0, bajaMin: 7.0 };
+// Límites que ha indicado el médico (en mmHg, como salen en el tensiómetro)
+const LIMITE = { altaMax: 130, bajaMax: 80, bajaMin: 70 };
 
 // Estados de ánimo que puede marcar cada día
 const ANIMOS = [
@@ -21,7 +21,9 @@ function leerJSON(clave, defecto) {
   try { return JSON.parse(localStorage.getItem(clave)) ?? defecto; }
   catch { return defecto; }
 }
-let registros = leerJSON(CLAVE, []);
+// Las tomas antiguas apuntadas con decimales (13,5) se pasan a enteros (135)
+const aMm = (v) => (v < 30 ? Math.round(v * 10) : Math.round(v));
+let registros = leerJSON(CLAVE, []).map((r) => ({ ...r, alta: aMm(r.alta), baja: aMm(r.baja) }));
 let animos = leerJSON(CLAVE_ANIMO, {}); // { 'AAAA-MM-DD': 'cansada', ... }
 
 function guardar() {
@@ -39,18 +41,15 @@ const aFecha = (iso) => { const [a, m, d] = iso.split('-').map(Number); return n
 const fechaCorta = (iso) => iso.split('-').reverse().join('/');
 const mayuscula = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 
-// Admite cmHg (13,5) y mmHg (135): los números grandes se pasan a cm
-const enCm = (v) => (v >= 30 ? v / 10 : v);
-const altaMal = (v) => enCm(v) > LIMITE.altaMax;
-const bajaMal = (v) => enCm(v) > LIMITE.bajaMax || enCm(v) < LIMITE.bajaMin;
+const altaMal = (v) => v > LIMITE.altaMax;
+const bajaMal = (v) => v > LIMITE.bajaMax || v < LIMITE.bajaMin;
 const tomaMal = (r) => altaMal(r.alta) || bajaMal(r.baja);
 
-// Muestra con coma decimal: 12.5 -> "12,5"
-const num = (v) => Number(v).toLocaleString('es-ES', { minimumFractionDigits: v < 30 ? 1 : 0, maximumFractionDigits: 2 });
+const num = (v) => String(Math.round(v));
 const cifra = (r) =>
   `<span class="${altaMal(r.alta) ? 'mal' : ''}">${num(r.alta)}</span>/<span class="${bajaMal(r.baja) ? 'mal' : ''}">${num(r.baja)}</span>`;
 
-const leer = (id) => Number(String($(id).value).trim().replace(',', '.'));
+const leer = (id) => Number(String($(id).value).trim());
 const porMomento = (a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora) || a.id - b.id;
 const deHoy = () => registros.filter((r) => r.fecha === hoyISO()).sort(porMomento);
 
@@ -106,8 +105,12 @@ $('form').addEventListener('submit', (e) => {
   const baja = leer('baja');
   const pulso = leer('pulso');
 
-  if (![alta, baja, pulso].every((v) => Number.isFinite(v) && v > 0)) {
-    alert('Revisa los números: solo cifras, con coma si hay decimales.');
+  if (![alta, baja, pulso].every((v) => Number.isInteger(v) && v > 0)) {
+    alert('Escribe solo números enteros, sin comas ni puntos. Por ejemplo: 125 / 78 y pulso 70.');
+    return;
+  }
+  if (alta < 50 || baja < 30) {
+    alert('Esos números parecen muy bajos. Cópialos tal cual salen en el tensiómetro, por ejemplo 125 / 78.');
     return;
   }
   if (baja >= alta) {
@@ -239,7 +242,6 @@ const TEXTO = [19, 39, 79];
 const SUAVE = [91, 111, 148];
 const ROJO = [196, 66, 58];
 const CIELO = [235, 241, 251];
-const dec = (v) => v.toLocaleString('es-ES', { minimumFractionDigits: 1 });
 
 function crearPdf(desde, hasta) {
   const datos = registros
@@ -256,9 +258,9 @@ function crearPdf(desde, hasta) {
   // Recuentos
   const diasMal = dias.filter((f) => porDia[f].some(tomaMal));
   const rangos = [
-    { texto: `Alta mayor de ${dec(LIMITE.altaMax)}`, test: (r) => altaMal(r.alta) },
-    { texto: `Baja mayor de ${dec(LIMITE.bajaMax)}`, test: (r) => enCm(r.baja) > LIMITE.bajaMax },
-    { texto: `Baja menor de ${dec(LIMITE.bajaMin)}`, test: (r) => enCm(r.baja) < LIMITE.bajaMin }
+    { texto: `Alta (SYS) mayor de ${LIMITE.altaMax}`, test: (r) => r.alta > LIMITE.altaMax },
+    { texto: `Baja (DIA) mayor de ${LIMITE.bajaMax}`, test: (r) => r.baja > LIMITE.bajaMax },
+    { texto: `Baja (DIA) menor de ${LIMITE.bajaMin}`, test: (r) => r.baja < LIMITE.bajaMin }
   ].map((g) => ({
     ...g,
     mediciones: datos.filter(g.test).length,
@@ -278,7 +280,7 @@ function crearPdf(desde, hasta) {
   doc.setFontSize(11);
   doc.setTextColor(...SUAVE);
   doc.text(`Del ${fechaCorta(dias[0])} al ${fechaCorta(dias[dias.length - 1])}: ${dias.length} días, ${datos.length} mediciones`, 14, 25);
-  doc.text(`Valores recomendados: alta hasta ${dec(LIMITE.altaMax)}; baja entre ${dec(LIMITE.bajaMin)} y ${dec(LIMITE.bajaMax)}.`, 14, 31);
+  doc.text(`Valores recomendados: alta hasta ${LIMITE.altaMax}; baja entre ${LIMITE.bajaMin} y ${LIMITE.bajaMax} (mmHg).`, 14, 31);
 
   // --- Resumen ---
   doc.setFillColor(...CIELO);
@@ -345,7 +347,7 @@ function crearPdf(desde, hasta) {
           { content: `Ánimo: ${animo ? animo.texto : 'sin marcar'}`, colSpan: 2,
             styles: { halign: 'right', fontStyle: animo ? 'bold' : 'italic', fontSize: 10 } }
         ],
-        ['Hora', 'Alta', 'Baja', 'Pulso']
+        ['Hora', 'Alta (SYS)', 'Baja (DIA)', 'Pulso (PUL)']
       ],
       body: tomas.map((r) => [r.hora, num(r.alta), num(r.baja), r.pulso]),
       styles: { fontSize: 11, halign: 'center', textColor: TEXTO, cellPadding: 2.2 },
