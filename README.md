@@ -20,11 +20,11 @@ HTML + CSS + JavaScript, sin servidor. Los datos se guardan en el propio móvil 
 
 - Los datos viven en el Chrome del móvil. Si se borran los datos de Chrome o se cambia de móvil, se pierden → usar de vez en cuando **Copia de seguridad → Descargar copia**.
 - Abrir siempre desde el mismo icono/URL (cada URL tiene su propio almacenamiento).
-- Si cambias algún archivo, sube la versión en `sw.js` (`tension-v4` → `tension-v5`).
+- Si cambias algún archivo, sube la versión en `sw.js` (`tension-v7` → `tension-v8`).
 
 ## Funciones
 
-- Solo hay que escribir alta, baja y pulso: la fecha y la hora se guardan solas con el momento actual.
+- Solo hay que escribir alta, baja (admiten decimales con coma, p. ej. 12,5) y pulso: la fecha y la hora se guardan solas con el momento actual.
 - Arriba, las tomas de hoy (1ª, 2ª y 3ª): se ve cuántas faltan.
 - Debajo, los días anteriores con sus tomas y la hora. Tocar una toma permite verla o borrarla.
 - Las tomas ≥140 alta o ≥90 baja se destacan en rojo.

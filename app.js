@@ -19,7 +19,12 @@ const hoyISO = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-
 const horaActual = (d = new Date()) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 const aFecha = (iso) => { const [a, m, d] = iso.split('-').map(Number); return new Date(a, m - 1, d); };
 const fechaCorta = (iso) => iso.split('-').reverse().join('/');
-const esAlta = (r) => r.alta >= 140 || r.baja >= 90;
+// Admite mmHg (138,5) y cmHg (13,8): si el número es pequeño se entiende en cm
+const enMm = (v) => (v < 30 ? v * 10 : v);
+const esAlta = (r) => enMm(r.alta) >= 140 || enMm(r.baja) >= 90;
+// Muestra con coma decimal: 12.5 -> "12,5"
+const num = (v) => Number(v).toLocaleString('es-ES', { maximumFractionDigits: 2 });
+const leer = (id) => Number(String($(id).value).trim().replace(',', '.'));
 const porMomento = (a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora) || a.id - b.id;
 const deHoy = () => registros.filter((r) => r.fecha === hoyISO()).sort(porMomento);
 
@@ -49,7 +54,7 @@ function pintarHoy() {
 
     el.innerHTML = r
       ? `<span class="slot-nombre">${r.hora}</span>
-         <span class="slot-valor${esAlta(r) ? ' alta' : ''}">${r.alta}/${r.baja}</span>
+         <span class="slot-valor${esAlta(r) ? ' alta' : ''}">${num(r.alta)}/${num(r.baja)}</span>
          <span class="slot-pulso">pulso ${r.pulso}</span>`
       : `<span class="slot-nombre">${i + 1}ª toma</span>
          <span class="slot-falta">${i === tomas.length ? 'Ahora' : 'Pendiente'}</span>`;
@@ -71,9 +76,14 @@ function actualizarFormulario() {
 
 $('form').addEventListener('submit', (e) => {
   e.preventDefault();
-  const alta = Number($('alta').value);
-  const baja = Number($('baja').value);
+  const alta = leer('alta');
+  const baja = leer('baja');
+  const pulso = leer('pulso');
 
+  if (![alta, baja, pulso].every((v) => Number.isFinite(v) && v > 0)) {
+    alert('Revisa los números: solo cifras, con coma si hay decimales.');
+    return;
+  }
   if (baja >= alta) {
     alert('La baja tiene que ser menor que la alta. Revisa los números.');
     return;
@@ -86,7 +96,7 @@ $('form').addEventListener('submit', (e) => {
     hora: horaActual(ahora),
     alta,
     baja,
-    pulso: Number($('pulso').value)
+    pulso
   });
   guardar();
 
@@ -96,14 +106,10 @@ $('form').addEventListener('submit', (e) => {
   avisar('Toma guardada');
 });
 
-// Al terminar un número de 3 cifras (o 2 en pulso), pasa solo al siguiente
-['alta', 'baja'].forEach((id) => {
-  $(id).addEventListener('input', (e) => {
-    const v = e.target.value;
-    const siguiente = id === 'alta' ? 'baja' : 'pulso';
-    if ((id === 'alta' && v.length === 3) || (id === 'baja' && v.length === 2 && Number(v) >= 40)) {
-      $(siguiente).focus();
-    }
+// Al pulsar "Siguiente" en el teclado, pasa a la casilla siguiente
+[['alta', 'baja'], ['baja', 'pulso']].forEach(([id, sig]) => {
+  $(id).addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); $(sig).focus(); }
   });
 });
 
@@ -136,7 +142,7 @@ function pintarCuaderno() {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'lectura' + (esAlta(r) ? ' alta' : '');
-      b.innerHTML = `<b>${r.alta}/${r.baja}</b><small>pulso ${r.pulso}</small><small>${r.hora}</small>`;
+      b.innerHTML = `<b>${num(r.alta)}/${num(r.baja)}</b><small>pulso ${r.pulso}</small><small>${r.hora}</small>`;
       b.addEventListener('click', () => verToma(r));
       tomasDia.appendChild(b);
     });
@@ -152,7 +158,7 @@ function verToma(r) {
   tomaAbierta = r;
   const d = aFecha(r.fecha).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
   $('detTitulo').textContent = d.charAt(0).toUpperCase() + d.slice(1);
-  $('detCifra').textContent = `${r.alta}/${r.baja}`;
+  $('detCifra').textContent = `${num(r.alta)}/${num(r.baja)}`;
   $('detCifra').className = 'det-cifra' + (esAlta(r) ? ' alta' : '');
   $('detPulso').textContent = `Pulso ${r.pulso}, a las ${r.hora}`;
   $('dlgToma').showModal();
@@ -200,7 +206,7 @@ function crearPdf(desde, hasta) {
   doc.autoTable({
     startY: 32,
     head: [['Fecha', 'Hora', 'Alta', 'Baja', 'Pulso']],
-    body: datos.map((r) => [fechaCorta(r.fecha), r.hora, r.alta, r.baja, r.pulso]),
+    body: datos.map((r) => [fechaCorta(r.fecha), r.hora, num(r.alta), num(r.baja), r.pulso]),
     styles: { fontSize: 11, halign: 'center', textColor: [19, 39, 79] },
     headStyles: { fillColor: [29, 59, 120], textColor: 255 },
     alternateRowStyles: { fillColor: [244, 247, 252] }

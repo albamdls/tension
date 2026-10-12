@@ -32,16 +32,16 @@
       <div class="cifras">
         <label class="cifra">
           <span>Alta</span>
-          <input type="number" id="alta" inputmode="numeric" min="50" max="260" placeholder="120" required>
+          <input type="text" id="alta" inputmode="decimal" enterkeyhint="next" pattern="[0-9]+([.,][0-9]{1,2})?" required>
         </label>
         <span class="barra" aria-hidden="true">/</span>
         <label class="cifra">
           <span>Baja</span>
-          <input type="number" id="baja" inputmode="numeric" min="30" max="160" placeholder="80" required>
+          <input type="text" id="baja" inputmode="decimal" enterkeyhint="next" pattern="[0-9]+([.,][0-9]{1,2})?" required>
         </label>
         <label class="cifra pulso">
           <span>Pulso</span>
-          <input type="number" id="pulso" inputmode="numeric" min="30" max="220" placeholder="70" required>
+          <input type="text" id="pulso" inputmode="numeric" enterkeyhint="done" pattern="[0-9]+" required>
         </label>
       </div>
 
