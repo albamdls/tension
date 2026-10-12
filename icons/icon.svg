@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Corazón: azul cobalto, más claro arriba -->
+    <linearGradient id="corazon" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#5a90f5"/>
+      <stop offset="1" stop-color="#2c5fd6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Todo escalado para que el corazón ocupe casi todo el icono -->
+  <g transform="translate(256 262) scale(1.55) translate(-256 -262)">
+    <!-- Corazón -->
+    <path fill="url(#corazon)" d="M256 404
+      C 236 390 112 314 112 208
+      C 112 156 150 120 198 120
+      C 226 120 246 134 256 154
+      C 266 134 286 120 314 120
+      C 362 120 400 156 400 208
+      C 400 314 276 390 256 404 Z"/>
+
+    <!-- Reflejo en el lóbulo izquierdo -->
+    <path d="M150 200 C 152 172 172 154 198 152" fill="none" stroke="#ffffff"
+          stroke-width="11" stroke-linecap="round" opacity="0.45"/>
+
+    <!-- Línea de pulso -->
+    <polyline points="128,222 198,222 220,184 248,262 274,200 290,222 384,222"
+              fill="none" stroke="#ffffff" stroke-width="18"
+              stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Carita: ojos cerrados contentos y sonrisa -->
+    <g fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round">
+      <path d="M200 296 Q 214 282 228 296"/>
+      <path d="M284 296 Q 298 282 312 296"/>
+      <path d="M240 322 Q 256 338 272 322"/>
+    </g>
+
+    <!-- Mejillas -->
+    <ellipse cx="184" cy="318" rx="15" ry="10" fill="#ffc2d1" opacity="0.8"/>
+    <ellipse cx="328" cy="318" rx="15" ry="10" fill="#ffc2d1" opacity="0.8"/>
+  </g>
+</svg>

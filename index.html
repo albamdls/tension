@@ -6,7 +6,7 @@
   <title>Mi Tensión</title>
   <meta name="theme-color" content="#1d3b78">
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icons/icon-192.png">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -14,8 +14,13 @@
 
   <!-- HOY -->
   <header class="hoy">
-    <p class="hoy-dia" id="hoyDia"></p>
-    <h1 class="hoy-fecha" id="hoyFecha"></h1>
+    <div class="hoy-cab">
+      <div>
+        <p class="hoy-dia" id="hoyDia"></p>
+        <h1 class="hoy-fecha" id="hoyFecha"></h1>
+      </div>
+      <img class="hoy-icono" src="icons/icon.svg" alt="" width="76" height="76">
+    </div>
     <div class="tomas-hoy" id="tomasHoy" aria-label="Tomas de hoy"></div>
   </header>
 

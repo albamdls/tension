@@ -1,6 +1,6 @@
 // Permite instalar la web como app y usarla sin conexión.
 // Si cambias algún archivo, sube el número de versión para que se actualice.
-const CACHE = 'tension-v4';
+const CACHE = 'tension-v6';
 const ARCHIVOS = [
   './',
   'index.html',
@@ -11,6 +11,7 @@ const ARCHIVOS = [
   'lib/jspdf.plugin.autotable.min.js',
   'fonts/atkinson-hyperlegible-latin-400-normal.woff2',
   'fonts/atkinson-hyperlegible-latin-700-normal.woff2',
+  'icons/icon.svg',
   'icons/icon-192.png',
   'icons/icon-512.png'
 ];
